@@ -9,8 +9,12 @@ const client = new Client({ intents: [
 	GatewayIntentBits.GuildMessages,
 ] });
 
+function chance(percent) {
+	return Math.random() < percent/100;
+}
+
 client.on(Events.MessageCreate, message => {
-	if(message.channelId == config.channel && message.author.id == config.user)
+	if(message.channelId == config.channel && message.author.id == config.user && chance(config.reactChance))
 	{
 		message.react(config.reaction);
 	}
