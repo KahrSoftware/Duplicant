@@ -1,7 +1,6 @@
 
 const env = require('dotenv').config();
-const config = require('./config.json');
-
+const { reactChance, channel, user, reaction } = require('./config.json');
 const { Client, Events, GatewayIntentBits } = require('discord.js');
 
 const client = new Client({ intents: [
@@ -9,14 +8,17 @@ const client = new Client({ intents: [
 	GatewayIntentBits.GuildMessages,
 ] });
 
-function chance(percent) {
-	return Math.random() < percent/100;
-}
+const messageFilter = (message) => message.channelId == channel && message.author.id == user
+const chance = (percent) => Math.random() < percent/100;
 
-client.on(Events.MessageCreate, message => {
-	if(message.channelId == config.channel && message.author.id == config.user && chance(config.reactChance))
+client.on(Events.MessageCreate, async message => {
+	if(messageFilter(message) && chance(reactChance))
 	{
-		message.react(config.reaction);
+		try {
+			await message.react(reaction);
+		} catch (error) {
+			console.log(`Error reacting: ${error}`);
+		}
 	}
 })
 
